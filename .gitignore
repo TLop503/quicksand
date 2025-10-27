@@ -2,4 +2,4 @@
 main
 
 # idea settings
-.idea/
+.idea/*
