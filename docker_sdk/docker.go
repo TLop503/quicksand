@@ -3,15 +3,16 @@ package docker_sdk
 import (
 	"context"
 	"fmt"
+	"io"
+	"os"
+	"time"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/pkg/errors"
-	"io"
-	"os"
-	"time"
 )
 
 func StartContainer(img string, ctx context.Context, ctrName string) error {
@@ -77,5 +78,5 @@ func StartContainer(img string, ctx context.Context, ctrName string) error {
 func randomizeName(ctrName string) string {
 	timestamp := time.Now().Unix()                // seconds since epoch
 	last4 := fmt.Sprintf("%04d", timestamp%10000) // get last 4 digits
-	return s + last4
+	return ctrName + last4
 }
