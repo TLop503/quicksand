@@ -6,6 +6,7 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 ## Tool Requirements
 **Go:** v1.24.7  
 **Docker:** v25.0.0 via https://github.com/moby/moby  
+**Firefox Docker Container:** v25.09.1 via https://github.com/jlesage/docker-firefox
 
 ### Dependency Notes
 **Go Modules:** Dependancies managed with the go.mod file  
