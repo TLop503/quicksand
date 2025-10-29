@@ -8,7 +8,7 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 - Provide a sandboxed environment where malicious sites can be analyzed without risk
 - Ensure usability and consistency with standard browsing experiences
 
-**Key features include:**
+**Key Features:**
 - Web-based design UI with sandboxed iframe rendering
 - Containerized environment for safe isolation
 - Automated cleanup via Ansible
