@@ -5,4 +5,8 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 
 ## Tool Requirements
 **Go:** 1.24.27  
-**Docker:** *Find this*  
+**Docker:** 25.0.0 via https://github.com/moby/moby  
+
+### Dependency Notes
+**Go Modules:** Dependancies managed with the go.mod file  
+**Docker:** github.com/docker/docker is replaced with github.com/moby/moby@v25.0.0+incompatible
