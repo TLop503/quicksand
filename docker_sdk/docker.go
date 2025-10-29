@@ -15,10 +15,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-func StartContainer(img string, ctx context.Context, ctrName string) error {
+func StartContainer(img string, ctx context.Context, ctrName string) (string, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return errors.Errorf("Failed to create client: %v", err)
+		return "", errors.Errorf("Failed to create client: %v", err)
 	}
 
 	// pull image if not present
@@ -26,7 +26,7 @@ func StartContainer(img string, ctx context.Context, ctrName string) error {
 	// image.PullOptions are vars for how pulling occurs
 	pullResponse, err := cli.ImagePull(ctx, img, types.ImagePullOptions{})
 	if err != nil {
-		return errors.Errorf("Failed to pull image: %v", err)
+		return "", errors.Errorf("Failed to pull image: %v", err)
 	}
 	defer pullResponse.Close()
 
@@ -34,7 +34,7 @@ func StartContainer(img string, ctx context.Context, ctrName string) error {
 	// TODO: confirm if this is needed
 	_, err = io.Copy(os.Stdout, pullResponse)
 	if err != nil {
-		return errors.Errorf("Failed to pull image and flush io: %v", err)
+		return "", errors.Errorf("Failed to pull image and flush io: %v", err)
 	}
 
 	// port bindings!
@@ -47,6 +47,9 @@ func StartContainer(img string, ctx context.Context, ctrName string) error {
 		"5900/tcp": []nat.PortBinding{{HostIP: "localhost", HostPort: "5900"}},
 	}
 
+	// Generate the randomized name and store it
+	actualName := randomizeName(ctrName)
+
 	// Create container
 	containerResponse, err := cli.ContainerCreate(ctx,
 		&container.Config{
@@ -58,20 +61,20 @@ func StartContainer(img string, ctx context.Context, ctrName string) error {
 		},
 		&network.NetworkingConfig{},
 		nil,
-		randomizeName(ctrName),
+		actualName,
 	)
 	if err != nil {
-		return errors.Errorf("Failed to create container: %v", err)
+		return "", errors.Errorf("Failed to create container: %v", err)
 	}
 
 	// Start the container!
 	if err := cli.ContainerStart(ctx, containerResponse.ID, container.StartOptions{}); err != nil {
-		return errors.Errorf("Failed to start container: %v", err)
+		return "", errors.Errorf("Failed to start container: %v", err)
 	}
 
 	fmt.Printf("Started container %s", img)
 
-	return nil
+	return actualName, nil
 }
 
 // randomize names for containers to create unique options
