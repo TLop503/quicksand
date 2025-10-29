@@ -90,6 +90,7 @@ func StopContainer(ctx context.Context, ctrName string) error {
 		return errors.Errorf("Failed to create Docker client: %v", err)
 	}
 
+	// Attempt to stop the container, using the standard stop time
 	err = cli.ContainerStop(ctx, ctrName, container.StopOptions{})
 	if err != nil {
 		return errors.Errorf("Failed to stop container %s: %v", ctrName, err)
@@ -118,12 +119,14 @@ func RemoveContainer(ctx context.Context, ctrName string, force bool) error {
 		}
 	}
 
+	// Struct that manages the type to removal
 	removeOptions := types.ContainerRemoveOptions{
 		Force:         force,
 		RemoveVolumes: true,
 		RemoveLinks:   false, // explicitly set to false unless you want link removal
 	}
 
+	// Remove container
 	err = cli.ContainerRemove(ctx, ctrName, removeOptions)
 	if err != nil {
 		return errors.Errorf("Failed to remove container %s: %v", ctrName, err)
