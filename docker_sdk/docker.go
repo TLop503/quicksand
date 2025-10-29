@@ -80,3 +80,52 @@ func randomizeName(ctrName string) string {
 	last4 := fmt.Sprintf("%04d", timestamp%10000) // get last 4 digits
 	return ctrName + last4
 }
+
+func StopContainer(ctx context.Context, ctrName string) error {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return errors.Errorf("Failed to create Docker client: %v", err)
+	}
+
+	err = cli.ContainerStop(ctx, ctrName, container.StopOptions{})
+	if err != nil {
+		return errors.Errorf("Failed to stop container %s: %v", ctrName, err)
+	}
+
+	fmt.Printf("Stopped container %s\n", ctrName)
+	return nil
+}
+
+func RemoveContainer(ctx context.Context, ctrName string, force bool) error {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return errors.Errorf("Failed to create Docker client: %v", err)
+	}
+
+	// Check if container exists and is stopped before removing
+	// Should add a call to stop container in this if container running?
+	if !force {
+		containerInfo, err := cli.ContainerInspect(ctx, ctrName)
+		if err != nil {
+			return errors.Errorf("Container %s not found: %v", ctrName, err)
+		}
+
+		if containerInfo.State.Running {
+			return errors.Errorf("Container %s is still running. Stop it first or use force=true", ctrName)
+		}
+	}
+
+	removeOptions := types.ContainerRemoveOptions{
+		Force:         force,
+		RemoveVolumes: true,
+		RemoveLinks:   false, // explicitly set to false unless you want link removal
+	}
+
+	err = cli.ContainerRemove(ctx, ctrName, removeOptions)
+	if err != nil {
+		return errors.Errorf("Failed to remove container %s: %v", ctrName, err)
+	}
+
+	fmt.Printf("Removed container %s\n", ctrName)
+	return nil
+}
