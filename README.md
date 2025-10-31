@@ -17,13 +17,13 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 
 ## Tool Requirements
 **Go:** v1.24.7  
-**SDK:** v25.0.0 via https://github.com/moby/moby  
+**SDK:** https://github.com/docker/go-sdk (specific versions can be found in go.mod)  
 **Firefox Docker Container:** v25.09.1 via https://github.com/jlesage/docker-firefox
 
 ### Dependency Notes
 **Go Modules:** Dependancies managed with the go.mod file  
 **go mod tidy:** Pulls in libraries  
-**Docker:** github.com/docker/docker is replaced with github.com/moby/moby@v25.0.0+incompatible
+**Docker:** github.com/docker/docker
 
 ## Installation Instructions
 
