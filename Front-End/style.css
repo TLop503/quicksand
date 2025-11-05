@@ -1,0 +1,67 @@
+body { 
+    font-family: sans-serif; 
+    background: #222; 
+    color: #eee; 
+}
+
+.iframe-container {
+  background-color: #111;       /* dark backdrop around iframe */
+  padding: 0.25in;              /* ¼ inch padding around iframe */
+  border: 3px solid #555;       /* subtle border around the container */
+  border-radius: 10px;          /* optional rounded corners */
+  margin: 20px auto;            /* center and add top/bottom spacing */
+  width: fit-content;           /* shrink to iframe width */
+}
+
+iframe {
+  width: 1400px;                /* or your desired width */
+  height: 750px;                /* or your desired height */
+  border: none;                 /* remove internal border */
+  display: block;
+}
+
+
+.button-container {
+  display: flex;
+  justify-content: center; /* centers buttons horizontally */
+  align-items: center;      /* vertically aligns buttons if different heights */
+  gap: 15px;                /* space between buttons */
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: 2px solid currentColor;
+  background: transparent;
+  color: #000;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+  
+button:hover {
+    transform: scaleX(1.2);    /* grow horizontally to the right */
+    /*border-color: #3f9af4;*/
+}  
+
+#restart-button button {
+    background-color: #FFD580;  /* pastel amber */
+}
+
+#stop-button button {
+    background-color: #FF9AA2;  /* soft coral */
+}
+
+#start-button button {
+    background-color: #A8E6CF;  /* mint green */
+}
+
+#tor-button button {
+    background-color: #CBAACB;  /* lavender */
+}
+
+#firefox-button button {
+    background-color: #AECBFA;  /* light sky blue */
+}
