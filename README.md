@@ -27,3 +27,19 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 ## Installation Instructions
 
 ## Usage Instructions
+
+## Deliverables
+- Single installer for setup
+  -
+- WebUI
+  -
+- CI/CD deployment
+  -
+- Progress and evolution reports
+  -
+- VM/Sandbox guide and tutorial
+  -
+- Class Presentation
+  -
+- Final Report
+  -
