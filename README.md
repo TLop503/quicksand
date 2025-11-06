@@ -1,7 +1,7 @@
 # Browser Sandbox for Viewing Potentially Malicious Content
 
 ## Project Overview
-A Browserling alternative using containers as a way to investigate websites. This will be a web-based user interface that will utilize an iframe connected to a sandboxed browser to isolate the content and enhance provided security. The use of containers will allow for easy cleanup without directly restarting the host. There will be an opt-in IP anonymization trigger that routes the IP through TOR and is compatible with Chrome and Firefox.
+A Browserling alternative using containers as a way to investigate websites. This will be a web-based user interface that will utilize an iframe connected to a sandboxed browser to isolate the content and enhance provided security. The use of containers will allow for easy cleanup without directly restarting the host. There will be an opt-in IP anonymization trigger that routes the IP through Tor and is compatible with Chrome and Firefox.
 
 **Project Purpose:**
 - Serve as a safe and agile alternative to Browserling
@@ -12,7 +12,7 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 - Web-based design UI with sandboxed iframe rendering
 - Containerized environment for safe isolation
 - Automated cleanup
-- Optional TOR routing for IP anonymization
+- Optional Tor routing for IP anonymization
 - Support for multiple browsers (Firefox, Chromium)
 
 ## Tool Requirements
@@ -30,17 +30,18 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 ## Usage Instructions
 
 ## Deliverables
-- Single installer for setup
-  -
-- WebUI
-  -
-- CI/CD deployment
-  -
-- Progress and evolution reports
-  -
-- VM/Sandbox guide and tutorial
-  -
-- Class Presentation
-  -
-- Final Report
-  -
+* Single installer for setup
+  * One script or executable installs and activates the sandbox automatically on all supported platforms.
+* WebUI
+  * Locally accessible live sandbox window, a Tor toggle switch to enable and disable Tor Browser's anonymity features, and a clean-up button that terminates and restores the sandbox to a clean snapshot. 
+* CI/CD deployment
+  * 
+* Progress and evolution reports
+  * 
+* VM/Sandbox guide and tutorial
+  * 
+* Class Presentation
+  *
+* Final Report
+  *
+
