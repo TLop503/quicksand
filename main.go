@@ -114,7 +114,7 @@ func stopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = docker_sdk.StopContainer(ctx, currentName)
-	_ = docker_sdk.RemoveContainer(ctx, currentName, true)
+	_ = docker_sdk.RemoveContainer(ctx, currentName, false)
 
 	log.Printf("Stopped container %s\n", currentName)
 	currentName = ""
