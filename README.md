@@ -35,13 +35,13 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 * WebUI
   * Locally accessible live sandbox window, a Tor toggle switch to enable and disable Tor Browser's anonymity features, and a clean-up button that terminates and restores the sandbox to a clean snapshot. 
 * CI/CD deployment
-  * 
+  * New container, or environment changes pushes to the repository automatically triggering builds published to GitHub Container Registry (GHCR) or equivalent.
 * Progress and evolution reports
-  * 
+  * Team's progress report and individual reports are clear, concise, correct, and delivered on time.
 * VM/Sandbox guide and tutorial
-  * 
+  * Documentation for installing and launching the sandbox will cover all aspects of software setup and usage.
 * Class Presentation
-  *
+  * 
 * Final Report
   *
 
