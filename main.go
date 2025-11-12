@@ -1,36 +1,3 @@
-// package main
-
-// import (
-// 	"context"
-// 	"fmt"
-
-// 	"github.com/tlop503/quicksand/docker_sdk"
-// )
-
-// func main() {
-// 	ctx := context.Background()
-
-// 	containerName, err := docker_sdk.StartContainer("jlesage/firefox", ctx, "firefox_go")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	err = docker_sdk.StopContainer(ctx, containerName)
-// 	if err != nil {
-// 		fmt.Printf("Error stopping container: %v\n", err)
-// 	} else {
-// 		fmt.Println("Container stopped successfully")
-// 	}
-
-// 	// Remove the container (using force=true in case stop failed)
-// 	err = docker_sdk.RemoveContainer(ctx, containerName, false)
-// 	if err != nil {
-// 		fmt.Printf("Error removing container: %v\n", err)
-// 	} else {
-// 		fmt.Println("Container removed successfully")
-// 	}
-// }
-
 package main
 
 import (
@@ -73,9 +40,17 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse optional body
 	var b bodyReq
 	_ = json.NewDecoder(r.Body).Decode(&b)
+
+	// Defualt to Firefox if no image provided
 	image := imageFirefox
+	ctrName := "firefox_go"
+
 	if b.Image != "" {
 		image = b.Image
+	}
+
+	if image == "jlesage/tor-browser" {
+		ctrName = "tor_go"
 	}
 
 	// Stop and remove any existing container first
@@ -90,7 +65,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	ctx2, cancel := context.WithTimeout(ctx, 6*time.Minute)
 	defer cancel()
 
-	name, err := docker_sdk.StartContainer(image, ctx2, "firefox_go")
+	name, err := docker_sdk.StartContainer(image, ctx2, ctrName)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, resp{OK: false, Error: err.Error()})
 		return
