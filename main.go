@@ -20,7 +20,7 @@ var (
 	currentName    string // name returned by docker_sdk.StartContainer
 	currentHostURL string // e.g. http://localhost:5800
 	imageFirefox   = "jlesage/firefox"
-	imageTor       = "jlesage/tor-browser"
+	imageTor       = "domistyle/tor-browser"
 )
 
 func writeJSON(w http.ResponseWriter, code int, v any) {
@@ -49,7 +49,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 		image = b.Image
 	}
 
-	if image == "jlesage/tor-browser" {
+	if image == "domistyle/tor-browser" {
 		ctrName = "tor_go"
 	}
 
@@ -114,12 +114,76 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 	startHandler(w, r)
 }
 
+// POST /api/swap - Switch between Tor and Firefox
+func swapHandler(w http.ResponseWriter, r *http.Request) {
+	type bodyReq struct {
+		To string `json:"to"` // "tor" or "firefox"
+	}
+
+	var b bodyReq
+	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
+		writeJSON(w, http.StatusBadRequest, resp{OK: false, Error: "Invalid JSON"})
+		return
+	}
+
+	// Determine which image to use
+	var image string
+	switch b.To {
+	case "tor":
+		image = imageTor
+	case "firefox":
+		image = imageFirefox
+	default:
+		writeJSON(w, http.StatusBadRequest, resp{OK: false, Error: "Invalid browser type"})
+		return
+	}
+
+	// Stop current container
+	ctx := r.Context()
+	if currentName != "" {
+		_ = docker_sdk.StopContainer(ctx, currentName)
+		_ = docker_sdk.RemoveContainer(ctx, currentName, true)
+		currentName = ""
+		currentHostURL = ""
+	}
+
+	// Start new container with selected image
+	ctx2, cancel := context.WithTimeout(ctx, 6*time.Minute)
+	defer cancel()
+
+	name, err := docker_sdk.StartContainer(image, ctx2, b.To+"_go")
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, resp{OK: false, Error: err.Error()})
+		return
+	}
+
+	currentName = name
+	currentHostURL = "http://localhost:5800"
+
+	log.Printf("Swapped to %s container %s\n", b.To, name)
+	writeJSON(w, http.StatusOK, resp{OK: true, IframeURL: currentHostURL})
+}
+
+// GET /api/health - Check if container is ready
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	if currentName == "" {
+		writeJSON(w, http.StatusServiceUnavailable, resp{OK: false, Error: "No container running"})
+		return
+	}
+
+	// You could also check if port 5800 is actually responding
+	// For now, just check if we have a container tracked
+	writeJSON(w, http.StatusOK, resp{OK: true})
+}
+
 func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/start", startHandler)
 	mux.HandleFunc("/api/stop", stopHandler)
 	mux.HandleFunc("/api/restart", restartHandler)
+	mux.HandleFunc("/api/swap", swapHandler)
+	mux.HandleFunc("/api/health", healthHandler)
 
 	srv := &http.Server{
 		Addr:         ":8080",
