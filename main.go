@@ -177,6 +177,10 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	// Serve files from static folder
+	http.Handle("/", http.FileServer(http.Dir("./Front-End")))
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/start", startHandler)
