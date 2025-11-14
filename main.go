@@ -29,6 +29,17 @@ func writeJSON(w http.ResponseWriter, code int, v any) {
 	_ = json.NewEncoder(w).Encode(v)
 }
 
+// Serve the HTML page at root path
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Serve the HTML file
+	http.ServeFile(w, r, "Front-End/index.html")
+}
+
 // POST /api/start
 // Optional JSON body: { "image": "jlesage/firefox" }
 func startHandler(w http.ResponseWriter, r *http.Request) {
@@ -177,17 +188,20 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	// Serve files from static folder
-	http.Handle("/", http.FileServer(http.Dir("./Front-End")))
-
 	mux := http.NewServeMux()
+
+	// Serve Front-End files (CSS, JS)
+	fs := http.FileServer(http.Dir("./Front-End"))
+	mux.Handle("/Front-End/", http.StripPrefix("/Front-End/", fs))
 
 	mux.HandleFunc("/api/start", startHandler)
 	mux.HandleFunc("/api/stop", stopHandler)
 	mux.HandleFunc("/api/restart", restartHandler)
 	mux.HandleFunc("/api/swap", swapHandler)
 	mux.HandleFunc("/api/health", healthHandler)
+
+	// Serve HTML page at root
+	mux.HandleFunc("/", homeHandler)
 
 	srv := &http.Server{
 		Addr:         ":8080",
