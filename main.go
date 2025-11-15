@@ -21,6 +21,7 @@ var (
 	currentHostURL string // e.g. http://localhost:5800
 	imageFirefox   = "jlesage/firefox"
 	imageTor       = "domistyle/tor-browser"
+	imageDefault   = imageFirefox
 )
 
 func writeJSON(w http.ResponseWriter, code int, v any) {
@@ -53,7 +54,7 @@ func startHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&b)
 
 	// Defualt to Firefox if no image provided
-	image := imageFirefox
+	image := imageDefault
 	ctrName := "firefox_go"
 
 	if b.Image != "" {
@@ -142,8 +143,10 @@ func swapHandler(w http.ResponseWriter, r *http.Request) {
 	switch b.To {
 	case "tor":
 		image = imageTor
+		imageDefault = imageTor
 	case "firefox":
 		image = imageFirefox
+		imageDefault = imageFirefox
 	default:
 		writeJSON(w, http.StatusBadRequest, resp{OK: false, Error: "Invalid browser type"})
 		return
