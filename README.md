@@ -45,3 +45,4 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 * Final Report
   *
 
+## Security Best Practices
