@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/tlop503/quicksand/docker_sdk"
@@ -190,7 +195,48 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, resp{OK: true})
 }
 
+func catchSIGTERM() error {
+	ctr := currentName
+	fmt.Println("Sigterm caught!")
+	req, err := http.NewRequest("POST", "http://localhost:8080/api/stop", bytes.NewBuffer(nil))
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status: %s", resp.Status)
+	}
+
+	log.Printf("%s stopped successfully.", ctr)
+	return nil
+}
+
 func main() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		err := catchSIGTERM()
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
+
+	// pull both containers in advance to save time later
+	ctx := context.Background()
+	err := docker_sdk.PullAll(ctx)
+	if err != nil {
+		log.Println(err)
+	}
+
 	mux := http.NewServeMux()
 
 	// Serve Front-End files (CSS, JS)
