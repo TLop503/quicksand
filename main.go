@@ -230,6 +230,13 @@ func main() {
 		os.Exit(0)
 	}()
 
+	// pull both containers in advance to save time later
+	ctx := context.Background()
+	err := docker_sdk.PullAll(ctx)
+	if err != nil {
+		log.Println(err)
+	}
+
 	mux := http.NewServeMux()
 
 	// Serve Front-End files (CSS, JS)

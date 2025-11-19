@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"time"
 
@@ -14,6 +15,23 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/pkg/errors"
 )
+
+func PullAll(ctx context.Context) error {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return errors.Errorf("Failed to create client: %v", err)
+	}
+	images := []string{"jlesage/firefox", "domistyle/tor-browser"}
+	for _, image := range images {
+		pullResponse, err := cli.ImagePull(ctx, image, types.ImagePullOptions{})
+		if err != nil {
+			return errors.Errorf("Failed to pull image: %v", err)
+		}
+		defer pullResponse.Close()
+	}
+	log.Println("Containers downloaded!")
+	return nil
+}
 
 func StartContainer(img string, ctx context.Context, ctrName string) (string, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
