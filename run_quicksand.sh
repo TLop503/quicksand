@@ -11,16 +11,6 @@ if ! command -v go &> /dev/null; then
     exit 1
 fi
 
-# Check if required folders exist
-if [ ! -d "Front-End" ]; then
-    echo "❌ Error: 'Front-End' folder not found"
-    exit 1
-fi
-
-if [ ! -d "docker-sdk" ]; then
-    echo "❌ Error: 'docker-sdk folder not found"
-fi
-
 # Clean up previous build
 echo "🧹 Cleaning previous build..."
 rm -f quicksand-app
