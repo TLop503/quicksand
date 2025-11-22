@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,13 +12,8 @@ import (
 	"time"
 
 	"github.com/tlop503/quicksand/docker_sdk"
+	"github.com/tlop503/quicksand/web"
 )
-
-type resp struct {
-	OK        bool   `json:"ok"`
-	IframeURL string `json:"iframeUrl,omitempty"`
-	Error     string `json:"error,omitempty"`
-}
 
 var (
 	currentName    string // name returned by docker_sdk.StartContainer
@@ -28,172 +22,6 @@ var (
 	imageTor       = "domistyle/tor-browser"
 	imageDefault   = imageFirefox
 )
-
-func writeJSON(w http.ResponseWriter, code int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	_ = json.NewEncoder(w).Encode(v)
-}
-
-// Serve the HTML page at root path
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
-	// Serve the HTML file
-	http.ServeFile(w, r, "Front-End/index.html")
-}
-
-// POST /api/start
-// Optional JSON body: { "image": "jlesage/firefox" }
-func startHandler(w http.ResponseWriter, r *http.Request) {
-	type bodyReq struct {
-		Image string `json:"image,omitempty"`
-	}
-	ctx := r.Context()
-
-	// Parse optional body
-	var b bodyReq
-	_ = json.NewDecoder(r.Body).Decode(&b)
-
-	// Defualt to Firefox if no image provided
-	image := imageDefault
-	ctrName := "firefox_go"
-
-	if b.Image != "" {
-		image = b.Image
-	}
-
-	if image == "domistyle/tor-browser" {
-		ctrName = "tor_go"
-	}
-
-	// Stop and remove any existing container first
-	if currentName != "" {
-		_ = docker_sdk.StopContainer(ctx, currentName)
-		_ = docker_sdk.RemoveContainer(ctx, currentName, true)
-		currentName = ""
-		currentHostURL = ""
-	}
-
-	// Start new container
-	ctx2, cancel := context.WithTimeout(ctx, 6*time.Minute)
-	defer cancel()
-
-	name, err := docker_sdk.StartContainer(image, ctx2, ctrName)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, resp{OK: false, Error: err.Error()})
-		return
-	}
-
-	iframe := "http://localhost:5800"
-	currentName = name
-	currentHostURL = iframe
-
-	log.Printf("Started container %s (%s)\n", name, image)
-	writeJSON(w, http.StatusOK, resp{OK: true, IframeURL: iframe})
-}
-
-// POST /api/stop
-func stopHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	if currentName == "" {
-		writeJSON(w, http.StatusOK, resp{OK: true})
-		return
-	}
-
-	_ = docker_sdk.StopContainer(ctx, currentName)
-	_ = docker_sdk.RemoveContainer(ctx, currentName, false)
-
-	log.Printf("Stopped container %s\n", currentName)
-	currentName = ""
-	currentHostURL = ""
-
-	writeJSON(w, http.StatusOK, resp{OK: true})
-}
-
-// POST /api/restart
-func restartHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	// Stop current container if one exists
-	if currentName != "" {
-		_ = docker_sdk.StopContainer(ctx, currentName)
-		_ = docker_sdk.RemoveContainer(ctx, currentName, true)
-		currentName = ""
-		currentHostURL = ""
-	}
-
-	// Restart default (Firefox)
-	startHandler(w, r)
-}
-
-// POST /api/swap - Switch between Tor and Firefox
-func swapHandler(w http.ResponseWriter, r *http.Request) {
-	type bodyReq struct {
-		To string `json:"to"` // "tor" or "firefox"
-	}
-
-	var b bodyReq
-	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-		writeJSON(w, http.StatusBadRequest, resp{OK: false, Error: "Invalid JSON"})
-		return
-	}
-
-	// Determine which image to use
-	var image string
-	switch b.To {
-	case "tor":
-		image = imageTor
-		imageDefault = imageTor
-	case "firefox":
-		image = imageFirefox
-		imageDefault = imageFirefox
-	default:
-		writeJSON(w, http.StatusBadRequest, resp{OK: false, Error: "Invalid browser type"})
-		return
-	}
-
-	// Stop current container
-	ctx := r.Context()
-	if currentName != "" {
-		_ = docker_sdk.StopContainer(ctx, currentName)
-		_ = docker_sdk.RemoveContainer(ctx, currentName, true)
-		currentName = ""
-		currentHostURL = ""
-	}
-
-	// Start new container with selected image
-	ctx2, cancel := context.WithTimeout(ctx, 6*time.Minute)
-	defer cancel()
-
-	name, err := docker_sdk.StartContainer(image, ctx2, b.To+"_go")
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, resp{OK: false, Error: err.Error()})
-		return
-	}
-
-	currentName = name
-	currentHostURL = "http://localhost:5800"
-
-	log.Printf("Swapped to %s container %s\n", b.To, name)
-	writeJSON(w, http.StatusOK, resp{OK: true, IframeURL: currentHostURL})
-}
-
-// GET /api/health - Check if container is ready
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	if currentName == "" {
-		writeJSON(w, http.StatusServiceUnavailable, resp{OK: false, Error: "No container running"})
-		return
-	}
-
-	// You could also check if port 5800 is actually responding
-	// For now, just check if we have a container tracked
-	writeJSON(w, http.StatusOK, resp{OK: true})
-}
 
 func catchSIGTERM() error {
 	ctr := currentName
@@ -243,14 +71,14 @@ func main() {
 	fs := http.FileServer(http.Dir("./Front-End"))
 	mux.Handle("/Front-End/", http.StripPrefix("/Front-End/", fs))
 
-	mux.HandleFunc("/api/start", startHandler)
-	mux.HandleFunc("/api/stop", stopHandler)
-	mux.HandleFunc("/api/restart", restartHandler)
-	mux.HandleFunc("/api/swap", swapHandler)
-	mux.HandleFunc("/api/health", healthHandler)
+	mux.HandleFunc("/api/start", web.StartHandler)
+	mux.HandleFunc("/api/stop", web.StopHandler)
+	mux.HandleFunc("/api/restart", web.RestartHandler)
+	mux.HandleFunc("/api/swap", web.SwapHandler)
+	mux.HandleFunc("/api/health", web.HealthHandler)
 
 	// Serve HTML page at root
-	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/", web.HomeHandler)
 
 	srv := &http.Server{
 		Addr:         ":8080",
