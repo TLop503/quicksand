@@ -21,7 +21,7 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 **Firefox Docker Container:** v25.09.1 via https://github.com/jlesage/docker-firefox
 
 ### Dependency Notes
-**Go Modules:** Dependancies managed with the go.mod file  
+**Go Modules:** Dependencies managed with the go.mod file  
 **go mod tidy:** Pulls in libraries  
 **Docker:** github.com/docker/docker
 
