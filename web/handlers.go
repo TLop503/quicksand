@@ -26,7 +26,7 @@ func writeJSON(w http.ResponseWriter, code int, v any) {
 // HomeHandler serves the root HTML page
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// Serve the HTML file
-	http.ServeFile(w, r, "Front-End/index.html")
+	http.ServeFile(w, r, "front_end/index.html")
 }
 
 /*

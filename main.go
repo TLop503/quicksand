@@ -61,8 +61,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Serve Front-End files (CSS, JS)
-	fs := http.FileServer(http.Dir("./Front-End"))
-	mux.Handle("/Front-End/", http.StripPrefix("/Front-End/", fs))
+	fs := http.FileServer(http.Dir("./front_end"))
+	mux.Handle("/front_end/", http.StripPrefix("/front_end/", fs))
 
 	mux.HandleFunc("/api/start", web.StartHandler)
 	mux.HandleFunc("/api/stop", web.StopHandler)
