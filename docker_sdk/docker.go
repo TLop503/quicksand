@@ -138,7 +138,7 @@ func RemoveContainer(ctx context.Context, ctrName string, force bool) error {
 	}
 
 	// Struct that manages the type to removal
-	removeOptions := types.ContainerRemoveOptions{
+	removeOptions := container.RemoveOptions{
 		Force:         force,
 		RemoveVolumes: true,
 		RemoveLinks:   false, // explicitly set to false unless you want link removal

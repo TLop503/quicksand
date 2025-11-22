@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
 	"os"
@@ -15,17 +16,9 @@ import (
 	"github.com/tlop503/quicksand/web"
 )
 
-var (
-	currentName    string // name returned by docker_sdk.StartContainer
-	currentHostURL string // e.g. http://localhost:5800
-	imageFirefox   = "jlesage/firefox"
-	imageTor       = "domistyle/tor-browser"
-	imageDefault   = imageFirefox
-)
-
 func catchSIGTERM() error {
-	ctr := currentName
-	fmt.Println("Sigterm caught!")
+	ctr := docker_sdk.CurrentCtr
+	fmt.Println(" Sigterm caught!")
 	req, err := http.NewRequest("POST", "http://localhost:8080/api/stop", bytes.NewBuffer(nil))
 	if err != nil {
 		return err
@@ -89,7 +82,10 @@ func main() {
 	}
 
 	log.Println("Listening on :8080")
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	err = srv.ListenAndServe()
+	if errors.Is(err, http.ErrServerClosed) {
+		log.Fatalf("Server closed. Goodbye!")
+	} else if err != nil {
 		log.Fatalf("server failed: %v", err)
 	}
 }
