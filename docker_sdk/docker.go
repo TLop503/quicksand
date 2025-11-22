@@ -61,8 +61,8 @@ func StartContainer(img string, ctx context.Context, ctrName string) (string, er
 		"5900/tcp": struct{}{},
 	}
 	portMap := nat.PortMap{
-		"5800/tcp": []nat.PortBinding{{HostIP: "localhost", HostPort: "5800"}},
-		"5900/tcp": []nat.PortBinding{{HostIP: "localhost", HostPort: "5900"}},
+		"5800/tcp": []nat.PortBinding{{HostIP: "127.0.0.1", HostPort: "5800"}},
+		"5900/tcp": []nat.PortBinding{{HostIP: "127.0.0.1", HostPort: "5900"}},
 	}
 
 	// Generate the randomized name and store it
