@@ -26,7 +26,23 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 **Docker:** github.com/docker/docker
 
 ## Installation Instructions
+Following instructions work on Linux system, crossplatform installation is yet to be implemented :).
+1) **Clone Repository**
+   * On your Linux system, clone the quicksand repository in your terminal. 
 
+2) **Install Docker**
+   * **Warning:** These instructions follow **Ubuntu Linux** installation! You can find your specific system installation instructions under the burger dropdown in the original docker documentation: https://docs.docker.com/engine/install/
+   * **Uninstall Conflicting Packages**
+     * `sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1)`
+
+**Set up Docker's `apt` repository**
+1) Add Docker's GPG key
+   * `sudo apt update`
+   * `sudo apt install ca-certificates curl`
+   * `sudo install -m 0755 -d /etc/apt/keyrings`
+   * `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc`
+   * `sudo chmod a+r /etc/apt/keyrings/docker.asc`
+   
 ## Usage Instructions
 
 ## Deliverables
