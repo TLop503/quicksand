@@ -34,14 +34,43 @@ Following instructions work on Linux system, crossplatform installation is yet t
    * **Warning:** These instructions follow **Ubuntu Linux** installation! You can find your specific system installation instructions under the burger dropdown in the original docker documentation: https://docs.docker.com/engine/install/
    * **Uninstall Conflicting Packages**
      * `sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1)`
-
-**Set up Docker's `apt` repository**
-1) Add Docker's GPG key
-   * `sudo apt update`
-   * `sudo apt install ca-certificates curl`
-   * `sudo install -m 0755 -d /etc/apt/keyrings`
-   * `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc`
-   * `sudo chmod a+r /etc/apt/keyrings/docker.asc`
+   * **Set up Docker's `apt` repository**
+     * Add Docker's GPG key:
+       * `sudo apt update`
+       * `sudo apt install ca-certificates curl`
+       * `sudo install -m 0755 -d /etc/apt/keyrings`
+       * `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc`
+       * `sudo chmod a+r /etc/apt/keyrings/docker.asc`
+      * Add repository to Apt sources
+        * `sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+  Types: deb
+  URIs: https://download.docker.com/linux/ubuntu
+  Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+  Components: stable
+  Signed-By: /etc/apt/keyrings/docker.asc
+  EOF`
+         * `sudo apt update`
+    *  Install Docker Packages
+       * `sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+    *  Docker should start automatically, but to check run:
+       * `sudo systemctl status docker`
+  3) **Install Go Programming Language**
+     * Delete any old Go installation
+       * `sudo rm -rf /usr/local/go`
+     * Check:
+       * `go version`
+     * Install the program
+       * `wget https://go.dev/dl/(latest version of go)`
+       * e.g. `wget https://go.dev/dl/go1.24.7.linux-amd64.tar.gz`
+     *  Extract Go into /usr/local
+       * `sudo tar -C /usr/local -xzf (latest version)`
+     * Add Go to PATH
+       * `echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc`
+     * Reload:
+       * `source ~/.bashrc`
+     * Confirm Installation
+       * `go version`
+         * Output should give you something like this: `go version go1.24.7 linux/amd64`
    
 ## Usage Instructions
 
