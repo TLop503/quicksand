@@ -73,6 +73,86 @@ Following instructions work on Linux system, crossplatform installation is yet t
          * Output should give you something like this: `go version go1.24.7 linux/amd64`
    
 ## Usage Instructions
+### 1. Verify Docker is Running 
+* Before starting Quicksand, ensure the Docker enginer is active:
+  * `sudo systemctl status docker`
+* You should see:
+  * Active: active (running)
+* Press **Ctrl + C** to exit this status view.
+
+### 2. Start the Quicksand application
+* Run the main startup script:
+  * `./run_quicksand.sh`
+* If the script runs successfully, you will an output similar to the following:
+    * 🔧 Quicksand - Building and Starting Server...
+🧹 Cleaning previous build...
+🏗️  Building Go application...
+✅ Build successful!
+🚀 Starting Quicksand server on http://localhost:8080
+📋 Available endpoints:
+   • http://localhost:8080/ (Web Interface)
+   • http://localhost:8080/api/health (Health Check)
+   • http://localhost:8080/api/start (Start Container)
+   • http://localhost:8080/api/stop (Stop Container)
+   • http://localhost:8080/api/swap (Swap between Tor and Firefox)
+   • http://localhost:8080/api/restart (Restart Container) Press Ctrl+C to stop the server
+==========================================
+2025/12/08 22:30:45 Containers downloaded!
+2025/12/08 22:30:45 Listening on :8080
+
+### 3. Open the Web Interface
+* Navigate to:
+  * `http://localhost:8080`
+* You should see the Quicksand web interface.
+* Once it loads, click **Start Container** to launch the sandbox environment.
+  * In the terminal, you should see the terminal downloading the required Docker images.
+  * Once these automatic downloads stop generating on your terminal, you will see a running sandbox environment!
+* To shut down Quicksand, return to the terminal where it is running and press:
+  * **Ctrl + C** 
+ 
+### Troubleshooting
+* If the Firefox or Tor container does not start after clicking its button in the WebUI and the interface remains on the “Reconnecting” screen, simply refresh the page. The container may have started successfully in the background, and refreshing ensures the WebUI reconnects properly.
+* Make sure you have the lastest version of Go
+
+### Quicksand Web Interface Overview
+The Quicksand WebUI provides a simple control panel for managing the browser sandbox containers. Each button in the interface performs a specific action through the backend API.
+
+🟢**Start Container**
+
+Launches a new browser container (either Firefox or Tor, depending on your current mode).
+Use this when:
+* You are starting the sandbox for the first time
+* The container is not running
+* You have recently stopped or restarted a container
+
+🔴**Stop Container**
+
+Stops the currently running browser container.
+Use this when:
+* You want to cleanly shut down the sandbox
+* You want to switch modes after a failed load
+Stopping the container will disconnect the WebUI until another container is started.
+
+🔁**Restart Container**
+
+Stops the current container and launches a fresh one.
+* The environment needs to be reset
+* You want to clear temporary data inside the container
+This performs a clean reset without needing a full shutdown.
+
+🕵️**Swap to Tor**
+
+Stops any active Firefox container and launches a Tor Browser container instead.
+Use this when:
+* You want to switch to a privacy-focused, Tor-routed browsing session
+* You need to test or analyze traffic through Tor
+
+🦊**Swap to Firefox**
+
+Stops any active Tor container and launches a Firefox container.
+Use this when:
+* You want a standard browsing environment
+* You are done using Tor and returning to normal analysis
 
 ## Deliverables
 * Single installer for setup
@@ -85,9 +165,5 @@ Following instructions work on Linux system, crossplatform installation is yet t
   * Team's progress report and individual reports are clear, concise, correct, and delivered on time.
 * VM/Sandbox guide and tutorial
   * Documentation for installing and launching the sandbox will cover all aspects of software setup and usage.
-* Class Presentation
-  * 
-* Final Report
-  *
 
 ## Security Best Practices
