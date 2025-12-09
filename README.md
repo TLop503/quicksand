@@ -1,19 +1,19 @@
 # Browser Sandbox for Viewing Potentially Malicious Content
 
 ## Project Overview
-A Browserling alternative using containers as a way to investigate websites. This will be a web-based user interface that will utilize an iframe connected to a sandboxed browser to isolate the content and enhance provided security. The use of containers will allow for easy cleanup without directly restarting the host. There will be an opt-in IP anonymization trigger that routes the IP through Tor and is compatible with Chrome and Firefox.
+A Browserling alternative using containers as a way to investigate websites. This will be a web-based user interface that will utilize an iframe connected to a sandboxed browser to isolate the content and enhance overall security. The use of containers will allow for easy cleanup without directly restarting the host. There will be an opt-in IP anonymization trigger that routes the IP through Tor and is compatible with Tor and Firefox.
 
 **Project Purpose:**
 - Serve as a safe and agile alternative to Browserling
-- Provide a sandboxed environment where malicious sites can be analyzed without risk
+- Provides a sandboxed environment where malicious sites can be analyzed without risk
 - Ensure usability and consistency with standard browsing experiences
 
 **Key Features:**
 - Web-based design UI with sandboxed iframe rendering
 - Containerized environment for safe isolation
-- Automated cleanup
+- Automated cleanup and reset
 - Optional Tor routing for IP anonymization
-- Support for multiple browsers (Firefox, Chromium)
+- Support for multiple browsers 
 
 ## Tool Requirements
 **Go:** v1.24.7  
@@ -21,17 +21,17 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 **Firefox Docker Container:** v25.09.1 via https://github.com/jlesage/docker-firefox
 
 ### Dependency Notes
-**Go Modules:** Dependancies managed with the go.mod file  
+**Go Modules:** Dependencies managed with the go.mod file  
 **go mod tidy:** Pulls in libraries  
 **Docker:** github.com/docker/docker
 
 ## Installation Instructions
-Following instructions work on Linux system, crossplatform installation is yet to be implemented :).
+The following instructions work on Linux. Cross-platform installation is not yet implemented :).
 1) **Clone Repository**
-   * On your Linux system, clone the quicksand repository in your terminal. 
+   * On your Linux system, clone the Quicksand repository in your terminal. 
 
 2) **Install Docker**
-   * **Warning:** These instructions follow **Ubuntu Linux** installation! You can find your specific system installation instructions under the burger dropdown in the original docker documentation: https://docs.docker.com/engine/install/
+   * **Warning:** These instructions follow **Ubuntu Linux** installation! Refer to Docker’s official documentation to find your specific system installation instructions: https://docs.docker.com/engine/install/
    * **Uninstall Conflicting Packages**
      * `sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1)`
    * **Set up Docker's `apt` repository**
@@ -41,7 +41,7 @@ Following instructions work on Linux system, crossplatform installation is yet t
        * `sudo install -m 0755 -d /etc/apt/keyrings`
        * `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc`
        * `sudo chmod a+r /etc/apt/keyrings/docker.asc`
-      * Add repository to Apt sources
+      * Add repository to Apt sources:
         * `sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
   Types: deb
   URIs: https://download.docker.com/linux/ubuntu
@@ -50,31 +50,31 @@ Following instructions work on Linux system, crossplatform installation is yet t
   Signed-By: /etc/apt/keyrings/docker.asc
   EOF`
          * `sudo apt update`
-    *  Install Docker Packages
+    *  Install Docker Packages:
        * `sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
     *  Docker should start automatically, but to check run:
        * `sudo systemctl status docker`
   3) **Install Go Programming Language**
-     * Delete any old Go installation
+     * Delete any old Go installation:
        * `sudo rm -rf /usr/local/go`
      * Check:
        * `go version`
-     * Install the program
-       * `wget https://go.dev/dl/(latest version of go)`
+     * Install the program:
+       * `wget https://go.dev/dl/(latest version of Go)`
        * e.g. `wget https://go.dev/dl/go1.24.7.linux-amd64.tar.gz`
-     *  Extract Go into /usr/local
-       * `sudo tar -C /usr/local -xzf (latest version)`
-     * Add Go to PATH
+     *  Extract Go into /usr/local:
+       * `sudo tar -C /usr/local -xzf (latest version of Go)`
+     * Add Go to PATH:
        * `echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc`
      * Reload:
        * `source ~/.bashrc`
-     * Confirm Installation
+     * Confirm Installation:
        * `go version`
          * Output should give you something like this: `go version go1.24.7 linux/amd64`
    
 ## Usage Instructions
 ### 1. Verify Docker is Running 
-* Before starting Quicksand, ensure the Docker enginer is active:
+* Before starting Quicksand, ensure the Docker engine is active:
   * `sudo systemctl status docker`
 * You should see:
   * Active: active (running)
@@ -83,7 +83,7 @@ Following instructions work on Linux system, crossplatform installation is yet t
 ### 2. Start the Quicksand application
 * Run the main startup script:
   * `./run_quicksand.sh`
-* If the script runs successfully, you will an output similar to the following:
+* If the script runs successfully, you will see an output similar to the following:
     * 🔧 Quicksand - Building and Starting Server...
 🧹 Cleaning previous build...
 🏗️  Building Go application...
@@ -105,14 +105,14 @@ Following instructions work on Linux system, crossplatform installation is yet t
   * `http://localhost:8080`
 * You should see the Quicksand web interface.
 * Once it loads, click **Start Container** to launch the sandbox environment.
-  * In the terminal, you should see the terminal downloading the required Docker images.
+  * In the terminal, you should see the terminal pull the required Docker images.
   * Once these automatic downloads stop generating on your terminal, you will see a running sandbox environment!
 * To shut down Quicksand, return to the terminal where it is running and press:
   * **Ctrl + C** 
  
 ### Troubleshooting
 * If the Firefox or Tor container does not start after clicking its button in the WebUI and the interface remains on the “Reconnecting” screen, simply refresh the page. The container may have started successfully in the background, and refreshing ensures the WebUI reconnects properly.
-* Make sure you have the lastest version of Go
+* Make sure you have the latest version of Go
 
 ### Quicksand Web Interface Overview
 The Quicksand WebUI provides a simple control panel for managing the browser sandbox containers. Each button in the interface performs a specific action through the backend API.
@@ -120,39 +120,45 @@ The Quicksand WebUI provides a simple control panel for managing the browser san
 🟢**Start Container**
 
 Launches a new browser container (either Firefox or Tor, depending on your current mode).
+
 Use this when:
-* You are starting the sandbox for the first time
-* The container is not running
-* You have recently stopped or restarted a container
+* You are starting the sandbox for the first time.
+* The container is not running.
+* You have recently stopped or restarted a container.
 
 🔴**Stop Container**
 
 Stops the currently running browser container.
+
 Use this when:
-* You want to cleanly shut down the sandbox
-* You want to switch modes after a failed load
+* You want to cleanly shut down the sandbox.
+* You want to switch modes after a failed load.
 Stopping the container will disconnect the WebUI until another container is started.
 
 🔁**Restart Container**
 
 Stops the current container and launches a fresh one.
-* The environment needs to be reset
-* You want to clear temporary data inside the container
+
+Use this when:
+* The environment needs to be reset.
+* You want to clear temporary data inside the container.
 This performs a clean reset without needing a full shutdown.
 
 🕵️**Swap to Tor**
 
 Stops any active Firefox container and launches a Tor Browser container instead.
+
 Use this when:
-* You want to switch to a privacy-focused, Tor-routed browsing session
-* You need to test or analyze traffic through Tor
+* You want to switch to a privacy-focused, Tor-routed browsing session.
+* You need to test or analyze traffic through Tor.
 
 🦊**Swap to Firefox**
 
 Stops any active Tor container and launches a Firefox container.
+
 Use this when:
-* You want a standard browsing environment
-* You are done using Tor and returning to normal analysis
+* You want a standard browsing environment.
+* You are done using Tor and returning to normal analysis.
 
 ## Deliverables
 * Single installer for setup
@@ -161,8 +167,6 @@ Use this when:
   * Locally accessible live sandbox window, a Tor toggle switch to enable and disable Tor Browser's anonymity features, and a clean-up button that terminates and restores the sandbox to a clean snapshot. 
 * CI/CD deployment
   * New container, or environment changes pushes to the repository automatically triggering builds published to GitHub Container Registry (GHCR) or equivalent.
-* Progress and evolution reports
-  * Team's progress report and individual reports are clear, concise, correct, and delivered on time.
 * VM/Sandbox guide and tutorial
   * Documentation for installing and launching the sandbox will cover all aspects of software setup and usage.
 
