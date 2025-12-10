@@ -25,6 +25,17 @@ A Browserling alternative using containers as a way to investigate websites. Thi
 **go mod tidy:** Pulls in libraries  
 **Docker:** github.com/docker/docker
 
+## Deliverables
+* Single installer for setup
+  * One script or executable installs and activates the sandbox automatically on all supported platforms.
+* WebUI
+  * Locally accessible live sandbox window, a Tor toggle switch to enable and disable Tor Browser anonymity features, and a clean-up button that terminates and restores the sandbox to a clean snapshot. 
+* CI/CD deployment
+  * New container, or environment changes pushes to the repository automatically triggering builds published to GitHub Container Registry (GHCR) or equivalent.
+* VM/Sandbox guide and tutorial
+  * Documentation for installing and launching the sandbox will cover all aspects of software setup and usage.
+
+
 ## Installation Instructions
 The following instructions work on Linux. Cross-platform installation is not yet implemented :).
 1) **Clone Repository**
@@ -160,14 +171,29 @@ Use this when:
 * You want a standard browsing environment.
 * You are done using Tor and returning to normal analysis.
 
-## Deliverables
-* Single installer for setup
-  * One script or executable installs and activates the sandbox automatically on all supported platforms.
-* WebUI
-  * Locally accessible live sandbox window, a Tor toggle switch to enable and disable Tor Browser's anonymity features, and a clean-up button that terminates and restores the sandbox to a clean snapshot. 
-* CI/CD deployment
-  * New container, or environment changes pushes to the repository automatically triggering builds published to GitHub Container Registry (GHCR) or equivalent.
-* VM/Sandbox guide and tutorial
-  * Documentation for installing and launching the sandbox will cover all aspects of software setup and usage.
+## Security Best Practices 
+The use of Quicksand significantly reduces untrusted potential harm when visiting a malicious website, but safe and responsible operation still requires proper cybersecurity practices. This section outlines important legal and social considerations to ensure that users interact with the sandbox, safely and ethically.
 
-## Security Best Practices
+### Handling Potential Malicious Content
+The sandboxed browser may allow files to be downloaded during analysis. These files should always be treated as malicious:
+* DO NOT open downloaded files on your host system.
+* Avoid transferring files out of the container unless absolutely necessary.
+### Container Isolation
+Quicksand relies on containerized isolation to protect the host:
+* Use the **Restart Container** button after visiting high-risk website to clear browser data.
+* Keep container sessions short and reset frequently.
+### Keep Tool Updated
+Outdated software can introduce security vulnerabilities:
+* Regularly update Docker and Go to latest version.
+* Periodically rebuild containers to ensure you have the latest security patches.
+### Tor-Based IP Anonymity
+Tor mode provides optional IP anonymization, but anonymity is not guaranteed.
+* Do not perform actions that could deanonymize your traffic.
+* Avoid logging into personal accounts when using Tor.
+* Use Tor only for analysis scenarios that require privacy or obscuring network traffic.
+### Ethical and Legal Considerations
+When handling the sandbox, be aware of your ethical responsibilities:
+* Ensure your actions comply with organizational policies, laws, and responsible-use guidelines.
+* Avoid visiting websites with content you are not authorized to handle.
+* DO NOT use the sandbox to distribute or access harmful material.
+
