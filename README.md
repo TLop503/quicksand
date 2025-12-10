@@ -92,6 +92,8 @@ The following instructions work on Linux. Cross-platform installation is not yet
 * Press **Ctrl + C** to exit this status view.
 
 ### 2. Start the Quicksand application
+* Chmod the ./run_quicksand script file to make it an executable:
+  * `chmod +x run_quicksand.sh`
 * Run the main startup script:
   * `./run_quicksand.sh`
 * If the script runs successfully, you will see an output similar to the following:
